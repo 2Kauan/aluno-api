@@ -1,0 +1,96 @@
+[project]
+name = "aluno-api"
+version = "0.1.0"
+description = "Sistema de Gerenciamento de Alunos com FastAPI"
+authors = [
+    {name = "Kauan Batista", email = "batistakauan598@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard] (>=0.115.0)",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=8.0.0)",
+    "pytest-cov (>=5.0.0)",
+    "ruff (>=0.7.0)",
+    "typos (>=1.26.0)",
+]
+
+# ---------------------------------------------------------------------------
+# Ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 79
+extend-exclude = ['migrations']
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single'
+
+# ---------------------------------------------------------------------------
+# Typos
+# ---------------------------------------------------------------------------
+[tool.typos.default.extend-words]
+Aluno = "Aluno"
+Alunos = "Alunos"
+aluno = "aluno"
+alunos = "alunos"
+matricula = "matricula"
+Matricula = "Matricula"
+curso = "curso"
+Curso = "Curso"
+Classe = "Classe"
+Gere = "Gere"
+responde = "responde"
+simular = "simular"
+
+[tool.typos.files]
+extend-exclude = [
+    "*.md",
+    ".venv",
+    "htmlcov",
+    "poetry.lock",
+    ".pytest_cache",
+    ".ruff_cache",
+]
+
+# ---------------------------------------------------------------------------
+# Pytest / coverage
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = ["-p", "no:warnings", "--cov=aluno_api", "--cov-context=test"]
+
+# ---------------------------------------------------------------------------
+# Poe (task runner)
+# ---------------------------------------------------------------------------
+[tool.poe]
+poetry_command = ""
+
+[tool.poe.tasks]
+lint = [
+    { cmd = "typos" },
+    { cmd = "ruff check" },
+]
+format = [
+    { cmd = "ruff check --fix" },
+    { cmd = "ruff format" },
+]
+serve = "fastapi dev aluno_api/app.py"
+test = [
+    { cmd = "typos" },
+    { cmd = "ruff check" },
+    { cmd = "pytest -s -x -vv $POE_EXTRA_ARGS" },
+    { cmd = "coverage html --show-contexts" },
+]
